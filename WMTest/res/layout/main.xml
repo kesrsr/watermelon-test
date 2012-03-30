@@ -4,8 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="100dp" android:layout_width="wrap_content" android:layout_gravity="center_vertical|center_horizontal|center">
-    <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignParentTop="true" android:id="@+id/start" android:text="@string/start"></Button>
-    <Button android:text="@string/stop" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:id="@+id/stop"></Button>
+<RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="wrap_content" android:layout_gravity="center_vertical|center_horizontal|center" android:layout_height="wrap_content">
+    <Button android:layout_alignParentTop="true" android:id="@+id/start" android:layout_height="100dp" android:layout_width="100dp" android:text="@string/record"></Button>
+    <Button android:text="@string/stop" android:layout_alignParentBottom="true" android:id="@+id/stop" android:layout_height="100dp" android:layout_width="100dp"></Button>
 </RelativeLayout>
 </LinearLayout>

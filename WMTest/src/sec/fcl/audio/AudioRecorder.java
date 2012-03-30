@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -117,9 +118,12 @@ public class AudioRecorder {
 			recordThread = null;
 		}
 
-		long time = System.currentTimeMillis();
-
-		copyWaveFile(getFilename(TEMP_FILE), getFilename(String.valueOf(time)));
+		Calendar cal = Calendar.getInstance();
+		String time = cal.get(Calendar.YEAR) + "_" + (cal.get(Calendar.MONTH)+1) + "_"
+				+ cal.get(Calendar.DATE) + "_" + cal.get(Calendar.HOUR_OF_DAY) + "_"
+				+ cal.get(Calendar.MINUTE) + "_" + cal.get(Calendar.SECOND);
+		
+		copyWaveFile(getFilename(TEMP_FILE), getFilename(time));
 		deleteTempFile();
 	}
 
