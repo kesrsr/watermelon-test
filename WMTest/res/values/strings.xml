@@ -6,4 +6,10 @@
     <string name="end">End</string>
     <string name="stop">Stop</string>
     <string name="record">Record</string>
+    <string name="thanks">Thanks for helping us! Please tell us is the watermelon you tested is GOOD or BAD.</string>
+    <string name="good">GOOD</string>
+    <string name="bad">BAD</string>
+    <string name="email"></string>
+    <string name="send_email">Send us an Email</string>
+    <string name="save">Save to local</string>
 </resources>

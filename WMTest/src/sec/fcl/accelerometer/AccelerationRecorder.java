@@ -11,10 +11,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Environment;
-import android.util.Log;
 
 public class AccelerationRecorder implements SensorEventListener {
-	private final static String tag = "AccelerationRecorder";
+	// private final static String tag = "AccelerationRecorder";
 	private float[] acceleration;
 
 	private final String FILE_EXTEN = ".acc";
@@ -27,6 +26,7 @@ public class AccelerationRecorder implements SensorEventListener {
 	private Thread recordThread = null;
 
 	private int frequency = 100; // 1 sec record 10 times
+	private String file_name = null;
 
 	public AccelerationRecorder(Context mContext) {
 		acceleration = new float[3];
@@ -43,31 +43,29 @@ public class AccelerationRecorder implements SensorEventListener {
 	}
 
 	public void startRecord() {
+		file_name = getFileName();
 		try {
-			os = new FileOutputStream(getFileName());
+			os = new FileOutputStream(file_name);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		isRecord = true;
 
-		 recordThread = new Thread(new Runnable() {
-		 @Override
-		 public void run() {
-		 record();
-		 }
-		 });
-		
-		 recordThread.start();
+		recordThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				record();
+			}
+		});
+
+		recordThread.start();
 	}
 
 	private void record() {
-		Log.e(tag, "Start record");
 		if (os != null) {
-			Log.e(tag, "os is not null");
 			while (isRecord) {
-				float sum = (float) Math.sqrt(Math.pow(acceleration[0],
-						2)
+				float sum = (float) Math.sqrt(Math.pow(acceleration[0], 2)
 						+ Math.pow(acceleration[1], 2)
 						+ Math.pow(acceleration[2], 2));
 				String string_sum = sum + "\n";
@@ -89,10 +87,10 @@ public class AccelerationRecorder implements SensorEventListener {
 	}
 
 	public void stopRecord() {
-		 if (recordThread != null) {
-		 isRecord = false;
-		 recordThread = null;
-		 }
+		if (recordThread != null) {
+			isRecord = false;
+			recordThread = null;
+		}
 		if (os != null)
 			try {
 				os.close();
@@ -101,8 +99,12 @@ public class AccelerationRecorder implements SensorEventListener {
 			}
 		sensor_manager.unregisterListener(this);
 	}
+	
+	public String getAcclFileName(){
+		return this.file_name;		
+	}
 
-	public String getFileName() {
+	private String getFileName() {
 		Calendar cal = Calendar.getInstance();
 		String time = cal.get(Calendar.YEAR) + "_"
 				+ (cal.get(Calendar.MONTH) + 1) + "_" + cal.get(Calendar.DATE)

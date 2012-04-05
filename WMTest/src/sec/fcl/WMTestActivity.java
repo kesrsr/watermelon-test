@@ -2,17 +2,19 @@ package sec.fcl;
 
 import sec.fcl.accelerometer.AccelerationRecorder;
 import sec.fcl.audio.AudioRecorder;
-import cn.wh.R;
+import sec.fcl.train.RecordSampleActivity;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import cn.wh.R;
 
 public class WMTestActivity extends Activity {
 	Button start;
 	Button stop;
-	AudioRecorder recorder;
+	AudioRecorder audioRecorder;
 	AccelerationRecorder accelerationRecorder;
 
 	/** Called when the activity is first created. */
@@ -27,7 +29,7 @@ public class WMTestActivity extends Activity {
 		start.setEnabled(true);
 		stop.setEnabled(false);
 
-		recorder = new AudioRecorder();
+		audioRecorder = new AudioRecorder();
 		accelerationRecorder = new AccelerationRecorder(
 				this.getApplicationContext());
 
@@ -36,7 +38,7 @@ public class WMTestActivity extends Activity {
 			public void onClick(View v) {
 				start.setEnabled(false);
 				stop.setEnabled(true);
-				recorder.startRecord();
+				audioRecorder.startRecord();
 				accelerationRecorder.init();
 				accelerationRecorder.startRecord();
 			}
@@ -47,8 +49,12 @@ public class WMTestActivity extends Activity {
 			public void onClick(View v) {
 				start.setEnabled(true);
 				stop.setEnabled(false);
-				recorder.stopRecord();
+				audioRecorder.stopRecord();
 				accelerationRecorder.stopRecord();
+				Intent intent = new Intent(WMTestActivity.this, RecordSampleActivity.class);
+				intent.putExtra("audiofilename", audioRecorder.getRcordFileName());
+				intent.putExtra("acclfilename", accelerationRecorder.getAcclFileName());
+				startActivity(intent);
 			}
 		});
 

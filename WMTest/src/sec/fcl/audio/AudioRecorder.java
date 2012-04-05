@@ -15,7 +15,6 @@ import android.util.Log;
 
 public class AudioRecorder {
 	private final String AUDIO_FILE_FORMAT = ".wav";
-	// private final String RAW_FILE_FORMAT = ".raw";
 	private final String FILE_FOLDER = "WMTest";
 	private final String TEMP_FILE = "record_temp";
 
@@ -28,9 +27,7 @@ public class AudioRecorder {
 	boolean isRecording = false;
 	private Thread recordThread = null;
 	AudioRecord recorder = null;
-
-	// private final int bytesPerSample = 2;
-	// private final double twopower15 = 32768.0;
+	private String fileName = null;
 
 	public AudioRecorder() {
 		bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, RECORD_CHANNEL,
@@ -121,12 +118,21 @@ public class AudioRecorder {
 			recorder = null;
 			recordThread = null;
 		}
+		saveToLocal();
 
+	}
+	
+	private void saveToLocal(){
+		fileName = getFilename(getTime(), AUDIO_FILE_FORMAT);
 		copyWaveFile(getFilename(TEMP_FILE, AUDIO_FILE_FORMAT),
-				getFilename(getTime(), AUDIO_FILE_FORMAT));
-		deleteTempFile();
+				fileName);
+		deleteTempFile();				
 	}
 
+	public String getRcordFileName(){
+		return fileName;		
+	}
+	
 	private String getTime() {
 		Calendar cal = Calendar.getInstance();
 		String time = cal.get(Calendar.YEAR) + "_"
@@ -137,29 +143,6 @@ public class AudioRecorder {
 		return time;
 	}
 
-	// private double[] getRawDoubleData(byte[] rawByteData) {
-	// int bytesRecorded = rawByteData.length;
-	// if (bytesRecorded % 2 != 0)
-	// throw new RuntimeException("N is not a power of 2");
-	//
-	// double[] rawDoubleData = new double[bytesRecorded / 2];
-	// for (int i = 0, floatIndex = 0; i < bytesRecorded - bytesPerSample + 1; i
-	// += bytesPerSample, floatIndex++) {
-	// double sample = 0;
-	// for (int b = 0; b < bytesPerSample; b++) {
-	// byte v = rawByteData[i + b];
-	// if (b < bytesPerSample - 1) {
-	// v &= 0xFF;
-	// }
-	// sample += v << (b * 8);
-	// }
-	// // scale to -1 to 1;
-	// double sample32 = (sample / twopower15);
-	// rawDoubleData[floatIndex] = sample32;
-	// }
-	// return rawDoubleData;
-	// }
-
 	private void deleteTempFile() {
 		File file = new File(getFilename(TEMP_FILE, AUDIO_FILE_FORMAT));
 
@@ -169,7 +152,6 @@ public class AudioRecorder {
 	private void copyWaveFile(String inFilename, String outFilename) {
 		FileInputStream in = null;
 		FileOutputStream out = null;
-		// FileOutputStream doubleosout = null;
 
 		long totalAudioLen = 0;
 		long totalDataLen = totalAudioLen + 36;
@@ -177,14 +159,12 @@ public class AudioRecorder {
 		int channels = 2;
 		long byteRate = RECORD_BPP * SAMPLE_RATE * channels / 8;
 
-		// String filename2 = getFilename(getTime(), RAW_FILE_FORMAT);
 
 		byte[] data = new byte[bufferSize];
 
 		try {
 			in = new FileInputStream(inFilename);
 			out = new FileOutputStream(outFilename);
-			// doubleosout = new FileOutputStream(filename2);
 			totalAudioLen = in.getChannel().size();
 			totalDataLen = totalAudioLen + 36;
 
@@ -193,18 +173,10 @@ public class AudioRecorder {
 
 			while (in.read(data) != -1) {
 				out.write(data);
-				// is quite slow write this data.
-				// double[] rawDoubleData = getRawDoubleData(data);
-				// for (int i = 0; i < rawDoubleData.length; i++) {
-				// doubleosout.write(String.valueOf(rawDoubleData[i])
-				// .getBytes());
-				// doubleosout.write(String.valueOf("\n").getBytes());
-				// }
 			}
 
 			in.close();
 			out.close();
-			// doubleosout.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
