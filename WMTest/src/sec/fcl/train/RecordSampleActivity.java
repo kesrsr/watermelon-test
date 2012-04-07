@@ -33,8 +33,9 @@ public class RecordSampleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				ArrayList<String> files = addTypeToFileName(radioGroup);
-				email(RecordSampleActivity.this,"huang@arch.ethz.ch", "zeng@arch.ethz.ch",
-						"watermelon training data", "Thanks for sending us data", files);
+				email(RecordSampleActivity.this, "huang@arch.ethz.ch",
+						"zeng@arch.ethz.ch", "watermelon training data",
+						"Thanks for sending us data", files);
 			}
 		});
 
@@ -42,9 +43,18 @@ public class RecordSampleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				addTypeToFileName(radioGroup);
+				relaunch();
 			}
 		});
 
+	}
+
+	// relaunch the default activity
+	private void relaunch() {
+		Intent i = getBaseContext().getPackageManager()
+				.getLaunchIntentForPackage(getBaseContext().getPackageName());
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
 	}
 
 	public ArrayList<String> addTypeToFileName(RadioGroup radioGroup) {
@@ -55,13 +65,13 @@ public class RecordSampleActivity extends Activity {
 
 		// get the type of watemelon: good or bad
 		int selectedRadio = radioGroup.getCheckedRadioButtonId();
-		//if nothing selected
-		if(selectedRadio == -1){
+		// if nothing selected
+		if (selectedRadio == -1) {
 			Toast.makeText(RecordSampleActivity.this,
-				"Please make a selection", Toast.LENGTH_SHORT).show();
+					"Please make a selection", Toast.LENGTH_SHORT).show();
 			return null;
-			}
-		
+		}
+
 		RadioButton selectedRadioButton = (RadioButton) findViewById(selectedRadio);
 
 		File audioFile = new File(audioFileName);
