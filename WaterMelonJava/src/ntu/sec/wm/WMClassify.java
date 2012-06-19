@@ -1,13 +1,10 @@
 package ntu.sec.wm;
 
-import java.awt.Color;
 import java.util.Vector;
 
 import ntu.sec.wm.ft.TransformAudioSignal;
 
-import com.badlogic.audio.visualization.Plot;
-
-import wm.preprocessing.Preprocessing;
+import ntu.sec.wm.preprocessing.Preprocessing;
 
 public class WMClassify {
 	Vector<float[]> samples;
@@ -21,12 +18,8 @@ public class WMClassify {
 		pre.run();
 		
 		samples = pre.getFrames();
-
-//		Plot plot = new Plot("Wave Plot", 512, 512);
-//
-//		plot.plot(samples.get(3), 44100 / 1000, Color.red);	
 		
-		TransformAudioSignal fft = new TransformAudioSignal(samples.get(1));
-		fft.run();
+		TransformAudioSignal fft = new TransformAudioSignal(samples);
+		fft.write_to_csv_file("wm/results/Far/GOOD_2012_6_12_22_25_24.csv");
 	}
 }

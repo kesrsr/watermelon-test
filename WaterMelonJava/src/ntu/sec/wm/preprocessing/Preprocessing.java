@@ -14,7 +14,7 @@ public class Preprocessing {
 	float thre = 0.025f;
 	ArrayList<Integer> list = new ArrayList<Integer>();
 	ArrayList<Integer> period;
-	String input_file = "wm/Close/GOOD_2012_6_12_22_25_57.wav";
+	String input_file = "wm/Far/GOOD_2012_6_12_22_25_24.wav";
 	private int min_frame_length = 1500;
 
 	public static void main(String[] args) {
