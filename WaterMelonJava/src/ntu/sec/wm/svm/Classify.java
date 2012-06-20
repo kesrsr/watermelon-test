@@ -9,9 +9,6 @@ import libsvm.svm_node;
 public class Classify {
 	private String model_file_name = "wm/model";
 	private float[] input;
-	//the period of features
-	private int min = 100;
-	private int max = 350;
 
 	public Classify(float[] test) {
 		this.input = test;
@@ -20,12 +17,13 @@ public class Classify {
 	public void run() {
 		try {
 			svm_model model = svm.svm_load_model(model_file_name);
-
-			svm_node[] in = new svm_node[max-min];
+			
+			System.out.println("model length "+model.l);
+			svm_node[] in = new svm_node[input.length];
 			for (int j = 0; j < in.length; j++) {
 				in[j] = new svm_node();
 				in[j].index = j;
-				in[j].value = input[min+j];
+				in[j].value = input[j];
 			}
 
 			double output = svm.svm_predict(model, in);
@@ -39,7 +37,5 @@ public class Classify {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

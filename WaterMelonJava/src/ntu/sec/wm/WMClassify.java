@@ -39,13 +39,21 @@ public class WMClassify {
 		TransformAudioSignal fft_test = new TransformAudioSignal(
 				pre_test.getFrames());
 
-//		fft_wm.write_to_csv_file(input_wm+csv);
-//		fft_chair.write_to_csv_file(input_chair+csv);
+		fft_wm.write_to_csv_file(input_wm+csv);
+		fft_chair.write_to_csv_file(input_chair+csv);
 //		fft_test.write_to_csv_file(test+csv);
 		
 		Train train = new Train(fft_wm.getFFT(), fft_chair.getFFT());
 		train.run();
-		Classify classify = new Classify(fft_test.getFFT().get(0));
+		Classify classify = new Classify(fft_wm.getFFT().get(0));
 		classify.run();
+		
+		print(fft_wm.getFFT().get(0));
+	}
+	
+	private void print(float[] array){
+		System.out.println("Length: "+array.length);
+		for(int i = 0; i < array.length; i++)
+			System.out.print(array[i] +" ");
 	}
 }

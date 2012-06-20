@@ -15,21 +15,19 @@ public class Train {
 	private svm_model model;
 	private String model_file = "wm/model";
 	private Vector<float[]> positive;
-	private Vector<float[]> negtive;
-	
-	//the period of features
-	private int min = 100;
-	private int max = 350;
-	
-	public Train(Vector<float[]> positive, Vector<float[]> negtive){
+	private Vector<float[]> negative;
+
+	public Train(Vector<float[]> positive, Vector<float[]> negtive) {
 		this.positive = positive;
-		this.negtive = negtive;
+		this.negative = negtive;
+		// System.out.println("Positive "+positive.get(0).length
+		// +" Negative "+negative.get(0).length);
 	}
 
-	public void run(){
+	public void run() {
 		assign_parameter();
 		assign_problem();
-		
+
 		model = svm.svm_train(prob, param);
 		try {
 			svm.svm_save_model(model_file, model);
@@ -37,49 +35,47 @@ public class Train {
 			e.printStackTrace();
 		}
 	}
-	
-	private void assign_problem(){
+
+	private void assign_problem() {
 		prob = new svm_problem();
-		prob.l = positive.size() + negtive.size();
+		prob.l = positive.size() + negative.size();
 		prob.x = new svm_node[prob.l][];
 		prob.y = new double[prob.l];
-		
-		for(int i = 0; i < positive.size(); i ++){
+
+		for (int i = 0; i < positive.size(); i++) {
 			float[] in = positive.get(i);
-			svm_node[] x = new svm_node[max - min];
-			for(int j = 0; j < x.length; j++)
-			{
+			svm_node[] x = new svm_node[in.length];
+			for (int j = 0; j < x.length; j++) {
 				x[j] = new svm_node();
 				x[j].index = j;
-				x[j].value = in[min+j];
+				x[j].value = in[j];
 			}
-			
+
 			prob.x[i] = x;
 			prob.y[i] = 1;
-		}		
-		
-		for(int i = 0; i < negtive.size(); i ++){
-			float[] in = negtive.get(i);
-			svm_node[] x = new svm_node[max - min];
-			for(int j = 0; j < x.length; j++)
-			{
+		}
+
+		for (int i = 0; i < negative.size(); i++) {
+			float[] in = negative.get(i);
+			svm_node[] x = new svm_node[in.length];
+			for (int j = 0; j < x.length; j++) {
 				x[j] = new svm_node();
 				x[j].index = j;
-				x[j].value = in[min+j];
+				x[j].value = in[j];
 			}
-			
-			prob.x[i+positive.size()] = x;
-			prob.y[i+positive.size()] = -1;
-		}		
+
+			prob.x[i + positive.size()] = x;
+			prob.y[i + positive.size()] = -1;
+		}
 	}
-	
-	private void assign_parameter(){
+
+	private void assign_parameter() {
 		param = new svm_parameter();
 		// default values
 		param.svm_type = svm_parameter.C_SVC;
 		param.kernel_type = svm_parameter.RBF;
 		param.degree = 3;
-		param.gamma = 0;	// 1/num_features
+		param.gamma = 0; // 1/num_features
 		param.coef0 = 0;
 		param.nu = 0.5;
 		param.cache_size = 100;

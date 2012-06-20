@@ -18,6 +18,10 @@ public class TransformAudioSignal {
 	private int cut = 600;
 	private int min_length = 300;
 
+	//the period of features
+	private int min = 100;
+	private int max = 103;
+
 	public TransformAudioSignal(Vector<float[]> origin) {
 		time_domain = origin;
 	}
@@ -60,11 +64,14 @@ public class TransformAudioSignal {
 			FFT fft = new FFT(time_specturm.length, sample_rate);
 			fft.forward(time_specturm);
 
-			float[] spectrum = Arrays.copyOfRange(fft.getSpectrum(), 0, cut);
+			float[] spectrum = Arrays.copyOfRange(fft.getSpectrum(), min, max);
 			frequency_specturm.add(spectrum);
 		}
 
-		return frequency_specturm;
+		Vector<float[]> frequency_specturm_back = new Vector<float[]>();
+		frequency_specturm_back.add(frequency_specturm.get(0));
+		
+		return frequency_specturm_back;	
 	}
 
 	public void write_to_csv_file(String file_name) {
@@ -75,32 +82,18 @@ public class TransformAudioSignal {
 				file.createNewFile();
 
 			FileWriter fw = new FileWriter(file);
-
-			for (int i = 0; i < time_domain.size(); i++) {
-				if(time_domain.get(i).length < min_length)
-					continue;
-				
-				int pow_two = next_pow_of_two(time_domain.get(i).length);
-				float[] time_specturm = new float[pow_two];
-				System.arraycopy(time_domain.get(i), 0, time_specturm, 0,
-						time_domain.get(i).length);
-				// padding 0 at the end
-				for (int j = time_domain.get(i).length; j < pow_two; j++)
-					time_specturm[j] = 0;
-				FFT fft = new FFT(time_specturm.length, sample_rate);
-
-				fft.forward(time_specturm);
-
-				float[] frequency_spectrum = Arrays.copyOfRange(fft.getSpectrum(), 0, cut);
+			
+			Vector<float[]> fft = getFFT();
+			for(int i = 0; i < fft.size(); i++){
+				float[] frequency_spectrum = Arrays.copyOfRange(fft.get(i), 0, cut);
 
 				for (int j = 0; j < frequency_spectrum.length; j++) {
 					fw.append(new String(frequency_spectrum[j] + ""));
 					fw.append(',');
 				}
-
 				fw.append('\n');
-
 			}
+				
 
 			fw.flush();
 			fw.close();
