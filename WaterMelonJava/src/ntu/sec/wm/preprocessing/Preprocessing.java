@@ -1,11 +1,13 @@
 package ntu.sec.wm.preprocessing;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import com.badlogic.audio.io.WaveDecoder;
+import com.badlogic.audio.visualization.Plot;
 
 public class Preprocessing {
 	int windowSize = 40;
@@ -14,11 +16,15 @@ public class Preprocessing {
 	float thre = 0.025f;
 	ArrayList<Integer> list = new ArrayList<Integer>();
 	ArrayList<Integer> period;
-	String input_file = "wm/Far/GOOD_2012_6_12_22_25_24.wav";
+	String input_file;
 	private int min_frame_length = 1500;
+	
+	public Preprocessing(String input){
+		this.input_file = input;
+	}
 
 	public static void main(String[] args) {
-		(new Preprocessing()).run();
+		(new Preprocessing("wm/Far/GOOD_2012_6_12_22_25_24.wav")).run();
 	}
 
 	public void run() {
@@ -50,6 +56,10 @@ public class Preprocessing {
 		root_mean_square(samples);
 		extract_frames(samples);
 		remove_fake_frames();
+		
+
+		// Plot plot = new Plot("Test",512, 512);
+		// plot.plot(origin_samples, 100, Color.red);
 	}
 
 	// return the minimum length of multiple of window size
