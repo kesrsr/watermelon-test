@@ -280,6 +280,14 @@ public class svm_toy extends Applet {
 
 			// build model & classify
 			svm_model model = svm.svm_train(prob, param);
+			
+			try {
+				svm.svm_save_model("wm/model_ref", model);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			svm_node[] x = new svm_node[1];
 			x[0] = new svm_node();
 			x[0].index = 1;
@@ -347,6 +355,14 @@ public class svm_toy extends Applet {
 			x[1] = new svm_node();
 			x[0].index = 1;
 			x[1].index = 2;
+			
+
+			try {
+				svm.svm_save_model("wm/model_ref", model);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			Graphics window_gc = getGraphics();
 			for (int i = 0; i < XLEN; i++)
@@ -361,6 +377,8 @@ public class svm_toy extends Applet {
 					window_gc.drawLine(i,j,i,j);
 			}
 		}
+		
+		
 
 		draw_all_points();
 	}

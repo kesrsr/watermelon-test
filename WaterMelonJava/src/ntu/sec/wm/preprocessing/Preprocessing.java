@@ -1,13 +1,14 @@
 package ntu.sec.wm.preprocessing;
 
-import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import ntu.sec.wm.filter.Butterworth;
+import ntu.sec.wm.filter.Filter;
+
 import com.badlogic.audio.io.WaveDecoder;
-import com.badlogic.audio.visualization.Plot;
 
 public class Preprocessing {
 	int windowSize = 40;
@@ -19,12 +20,18 @@ public class Preprocessing {
 	String input_file;
 	private int min_frame_length = 1500;
 	
-	public Preprocessing(String input){
+	Butterworth bw;
+	Filter filter;
+
+	public Preprocessing(String input) {
 		this.input_file = input;
+		
+		bw = new Butterworth(2, 0.05f, true);
+		filter = new Filter(bw.computeB(), bw.computeA());
 	}
 
 	public static void main(String[] args) {
-		(new Preprocessing("wm/Far/GOOD_2012_6_12_22_25_24.wav")).run();
+		(new Preprocessing("wm/Close/GOOD_2012_6_12_22_25_57.wav")).run();
 	}
 
 	public void run() {
@@ -45,21 +52,20 @@ public class Preprocessing {
 
 		samples = new float[padding(allSamples.size())];
 		origin_samples = new float[padding(allSamples.size())];
-		for (int i = 0; i < allSamples.size(); i++) 
+		for (int i = 0; i < allSamples.size(); i++)
 			samples[i] = allSamples.get(i);
-		
-		for (int i = allSamples.size(); i < samples.length; i++) 
+
+		for (int i = allSamples.size(); i < samples.length; i++)
 			samples[i] = 0;
-		
+
 		System.arraycopy(samples, 0, origin_samples, 0, origin_samples.length);
-		
+
 		root_mean_square(samples);
 		extract_frames(samples);
 		remove_fake_frames();
-		
 
-		// Plot plot = new Plot("Test",512, 512);
-		// plot.plot(origin_samples, 100, Color.red);
+//		Plot plot = new Plot("Test", 512, 512);
+//		plot.plot(getFrames().get(0), 100, Color.red);
 	}
 
 	// return the minimum length of multiple of window size
@@ -127,8 +133,8 @@ public class Preprocessing {
 
 		for (int i = 0; i < period.size() / 2; i++)
 			if (period.get(i * 2 + 1) - period.get(i * 2) < min_frame_length) {
-				System.out.println("remove " + period.get(i * 2) + " and "
-						+ period.get(i * 2 + 1));
+				// System.out.println("remove " + period.get(i * 2) + " and "
+				// + period.get(i * 2 + 1));
 				period.remove(i * 2 + 1);
 				period.remove(i * 2);
 			}
@@ -140,9 +146,26 @@ public class Preprocessing {
 		if (period == null || period.size() == 0)
 			return null;
 		for (int i = 0; i < period.size() / 2; i++) {
-			float[] frame = getFrames(origin_samples, period.get(i * 2), period
-					.get(i * 2 + 1));
+			System.out.print(period.get(i * 2) + "-->" + period.get(i * 2 + 1)
+					+ "\n");
+			float[] frame = getFrames(origin_samples, period.get(i * 2),
+					period.get(i * 2 + 1));
 			frames.add(frame);
+		}
+
+		return frames;
+	}
+	
+	public Vector<float[]> getFilterFrames() {
+		Vector<float[]> frames = new Vector<float[]>();
+
+		if (period == null || period.size() == 0)
+			return null;
+		for (int i = 0; i < period.size() / 2; i++) {
+			float[] frame = getFrames(origin_samples, period.get(i * 2),
+					period.get(i * 2 + 1));
+			
+			frames.add(filter.filter(frame));
 		}
 
 		return frames;
@@ -153,7 +176,7 @@ public class Preprocessing {
 			return null;
 
 		float[] frame = new float[end - start + 1];
-		
+
 		System.arraycopy(origin, start, frame, 0, end - start + 1);
 
 		return frame;

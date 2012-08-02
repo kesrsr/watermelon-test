@@ -1,59 +1,109 @@
 package ntu.sec.wm;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
-import ntu.sec.wm.ft.TransformAudioSignal;
-
+import ntu.sec.wm.features.ShortTimeEnergy;
 import ntu.sec.wm.preprocessing.Preprocessing;
 import ntu.sec.wm.svm.Classify;
-import ntu.sec.wm.svm.Train;
 
 public class WMClassify {
 	Vector<float[]> samples;
-	private String wav = ".wav";
-	private String csv = ".csv";
-	
-	String input_wm = "wm/Far/GOOD_2012_6_12_22_55_17";
-	String input_chair = "wm/Bad/BAD_2012_6_20_14_37_31";
 
-//	String test = "wm/Bad/BAD_2012_6_20_14_37_22";
-	String test = "wm/Far/GOOD_2012_6_12_22_55_17";
+	String folder_pos = "wm/Train/Ripe/";
+	String folder_neg = "wm/Train/Unripe/";
+	String folder_test_pos = "wm/Test/Ripe/";
+	String folder_test_neg = "wm/Test/Unripe/";
+	String test = "wm/Test/Ripe/GOOD_2012_4_10_16_40_30";
+
+	// String test = "wm/Far/GOOD_2012_6_12_22_55_54";
 
 	public static void main(String[] args) {
 		(new WMClassify()).run();
 	}
 
 	public void run() {
-		Preprocessing pre_wm = new Preprocessing(input_wm+wav);
-		pre_wm.run();
-		TransformAudioSignal fft_wm = new TransformAudioSignal(
-				pre_wm.getFrames());
 
-		Preprocessing pre_chair = new Preprocessing(input_chair+wav);
-		pre_chair.run();
-		TransformAudioSignal fft_chair = new TransformAudioSignal(
-				pre_chair.getFrames());
+		Vector<float[]> train_positive_feature = new Vector<float[]>();
+		Vector<float[]> train_negative_feature = new Vector<float[]>();
 
-		Preprocessing pre_test = new Preprocessing(input_wm+wav);
-		pre_test.run();
-		TransformAudioSignal fft_test = new TransformAudioSignal(
-				pre_test.getFrames());
+		Vector<float[]> test_pos_feature = new Vector<float[]>();
+		Vector<float[]> test_neg_feature = new Vector<float[]>();
 
-		fft_wm.write_to_csv_file(input_wm+csv);
-		fft_chair.write_to_csv_file(input_chair+csv);
-//		fft_test.write_to_csv_file(test+csv);
+		loadFeature(folder_pos, train_positive_feature);
+		loadFeature(folder_neg, train_negative_feature);
+		loadFeature(folder_test_pos, test_pos_feature);
+		loadFeature(folder_test_neg, test_neg_feature);
+
+		Classify classify_unripe = new Classify(test_neg_feature, 2);
+		classify_unripe.run();
 		
-		Train train = new Train(fft_wm.getFFT(), fft_chair.getFFT());
-		train.run();
-		Classify classify = new Classify(fft_wm.getFFT().get(0));
-		classify.run();
-		
-		print(fft_wm.getFFT().get(0));
+		Classify classify_ripe = new Classify(test_pos_feature, 1);
+		classify_ripe.run();
 	}
-	
-	private void print(float[] array){
-		System.out.println("Length: "+array.length);
-		for(int i = 0; i < array.length; i++)
-			System.out.print(array[i] +" ");
+
+	private void loadFeature(String folder, Vector<float[]> features_vector) {
+		File pos_folder = new File(folder);
+		if (pos_folder.isDirectory()) {
+			String[] files = pos_folder.list();
+			for (int i = 0; i < files.length; i++)
+				if (!files[i].startsWith(".")) {
+					Preprocessing pre_wm = new Preprocessing(pos_folder + "/"
+							+ files[i]);
+					pre_wm.run();
+					ShortTimeEnergy ste = new ShortTimeEnergy(
+							pre_wm.getFilterFrames());
+					ste.calculate();
+
+					float[][] features = ste.getFeature();
+
+					// System.out.println(files[i] + " " + features.length);
+					for (int j = 0; j < features.length; j++) {
+						// System.out.println(files[i] + " " +
+						// features[j].length);
+						features_vector.add(features[j]);
+					}
+				}
+		}
+	}
+
+	protected void print(float[] array) {
+		System.out.println("Length: " + array.length);
+		for (int i = 0; i < array.length; i++)
+			System.out.print(array[i] + " ");
+	}
+
+	protected void write(String file_name, Vector<float[]> write) {
+		try {
+			File file = new File(file_name);
+
+			if (!file.exists())
+				file.createNewFile();
+
+			FileWriter fw = new FileWriter(file);
+
+			for (int i = 0; i < write.size(); i++) {
+				float[] frequency_spectrum = write.get(i);
+
+				for (int j = 0; j < frequency_spectrum.length; j++) {
+					fw.append(new String(frequency_spectrum[j] + ""));
+					fw.append(',');
+				}
+				fw.append('\n');
+			}
+
+			fw.flush();
+			fw.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Write ends");
 	}
 }

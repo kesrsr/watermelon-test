@@ -28,6 +28,9 @@ public class Train {
 		assign_parameter();
 		assign_problem();
 
+		param.gamma = 0.2;
+		
+//		System.out.println(prob.x.length);
 		model = svm.svm_train(prob, param);
 		try {
 			svm.svm_save_model(model_file, model);
@@ -47,7 +50,7 @@ public class Train {
 			svm_node[] x = new svm_node[in.length];
 			for (int j = 0; j < x.length; j++) {
 				x[j] = new svm_node();
-				x[j].index = j;
+				x[j].index = j + 1;
 				x[j].value = in[j];
 			}
 
@@ -60,12 +63,12 @@ public class Train {
 			svm_node[] x = new svm_node[in.length];
 			for (int j = 0; j < x.length; j++) {
 				x[j] = new svm_node();
-				x[j].index = j;
+				x[j].index = j + 1;
 				x[j].value = in[j];
 			}
 
-			prob.x[i + positive.size()] = x;
-			prob.y[i + positive.size()] = -1;
+			prob.x[i+positive.size()] = x;
+			prob.y[i+positive.size()] = 2;
 		}
 	}
 
@@ -79,7 +82,7 @@ public class Train {
 		param.coef0 = 0;
 		param.nu = 0.5;
 		param.cache_size = 100;
-		param.C = 1;
+		param.C = 100;
 		param.eps = 1e-3;
 		param.p = 0.1;
 		param.shrinking = 1;
