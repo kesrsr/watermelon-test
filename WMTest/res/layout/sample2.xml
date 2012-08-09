@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/thanks"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/thanku"
+        android:textColor="#33AAAA"
+        android:textSize="16dp" />
+
+    <Button
+        android:id="@+id/email"
+        android:layout_width="150dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="70dp"
+        android:text="@string/tellus" android:textSize="40dp"/>
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center"
+        android:text="@string/exit" android:textSize="40dp"/>
+
+    <RadioGroup
+        android:id="@+id/type"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp" android:layout_gravity="center" android:layout_marginLeft="20dp">
+
+        <RadioButton
+            android:id="@+id/good"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:text="@string/ripe" android:textSize="40dp"/>
+
+        <RadioButton
+            android:id="@+id/bad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="@string/unripe" android:textSize="40dp"/>
+
+    </RadioGroup>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/happy" android:layout_gravity="center" android:layout_marginTop="-120dp"/>
+
+</FrameLayout>

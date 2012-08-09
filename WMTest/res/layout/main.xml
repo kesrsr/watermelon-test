@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="center|fill">
-    <Button android:id="@+id/start" android:layout_height="100dp" android:layout_width="100dp" android:text="@string/record" android:layout_gravity="center_horizontal"></Button>
-    <Button android:text="@string/stop" android:id="@+id/stop" android:layout_height="100dp" android:layout_width="100dp" android:layout_gravity="center|bottom" android:layout_marginBottom="10dp"></Button>
+    android:layout_gravity="center|fill"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/ss"
+        android:textSize="30dp" >
+    </Button>
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="10dp"
+        android:text="@string/stop"
+        android:textSize="30dp" >
+    </Button>
+
 </FrameLayout>

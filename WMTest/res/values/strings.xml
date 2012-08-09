@@ -12,4 +12,11 @@
     <string name="email"></string>
     <string name="send_email">Send us an Email</string>
     <string name="save">Save to local</string>
+    <string name="exit">Exit</string>
+    <string name="tellus">Tell us</string>
+    <string name="ripe">Ripe</string>
+    <string name="unripe">Unripe</string>
+    <string name="thanku">Thanks for using our application! Please tell us whether the result is correct or not to help us improve the application!</string>
+    <string name="ss">Start</string>
+    <string name="cl">WaterMelonClassify</string>
 </resources>
