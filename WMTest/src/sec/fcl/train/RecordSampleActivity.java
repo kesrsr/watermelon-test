@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wh.R;
+import sec.fcl.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +22,7 @@ public class RecordSampleActivity extends Activity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample);
+		setContentView(R.layout.sample2);
 
 		Button send_email = (Button) findViewById(R.id.email);
 		Button save_local = (Button) findViewById(R.id.save);
@@ -33,7 +33,7 @@ public class RecordSampleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				ArrayList<String> files = addTypeToFileName(radioGroup);
-				email(RecordSampleActivity.this, "huang@arch.ethz.ch",
+				email(RecordSampleActivity.this, "hwangxf@gmail.com",
 						"zeng@arch.ethz.ch", "watermelon training data",
 						"Thanks for sending us data", files);
 			}
@@ -61,7 +61,7 @@ public class RecordSampleActivity extends Activity {
 		// get file names passed in
 		Bundle extras = getIntent().getExtras();
 		String audioFileName = extras.getString("audiofilename");
-		String acclFileName = extras.getString("acclfilename");
+		// String acclFileName = extras.getString("acclfilename");
 
 		// get the type of watemelon: good or bad
 		int selectedRadio = radioGroup.getCheckedRadioButtonId();
@@ -79,14 +79,14 @@ public class RecordSampleActivity extends Activity {
 				selectedRadioButton.getText() + "_" + audioFile.getName());
 		audioFile.renameTo(newAudioFile);
 
-		File acclFile = new File(acclFileName);
-		File newAcclFile = new File(acclFile.getParent(),
-				selectedRadioButton.getText() + "_" + acclFile.getName());
-		acclFile.renameTo(newAcclFile);
+		// File acclFile = new File(acclFileName);
+		// File newAcclFile = new File(acclFile.getParent(),
+		// selectedRadioButton.getText() + "_" + acclFile.getName());
+		// acclFile.renameTo(newAcclFile);
 
 		ArrayList<String> files = new ArrayList<String>();
 		files.add(newAudioFile.getAbsolutePath());
-		files.add(newAcclFile.getAbsolutePath());
+		// files.add(newAcclFile.getAbsolutePath());
 
 		return files;
 	}

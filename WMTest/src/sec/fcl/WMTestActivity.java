@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import cn.wh.R;
+import sec.fcl.R;
 
 public class WMTestActivity extends Activity {
 	Button start;
@@ -39,8 +39,8 @@ public class WMTestActivity extends Activity {
 				start.setEnabled(false);
 				stop.setEnabled(true);
 				audioRecorder.startRecord();
-				accelerationRecorder.init();
-				accelerationRecorder.startRecord();
+//				accelerationRecorder.init();
+//				accelerationRecorder.startRecord();
 			}
 		});
 
@@ -50,10 +50,10 @@ public class WMTestActivity extends Activity {
 				start.setEnabled(true);
 				stop.setEnabled(false);
 				audioRecorder.stopRecord();
-				accelerationRecorder.stopRecord();
+//				accelerationRecorder.stopRecord();
 				Intent intent = new Intent(WMTestActivity.this, RecordSampleActivity.class);
 				intent.putExtra("audiofilename", audioRecorder.getRcordFileName());
-				intent.putExtra("acclfilename", accelerationRecorder.getAcclFileName());
+//				intent.putExtra("acclfilename", accelerationRecorder.getAcclFileName());
 				startActivity(intent);
 			}
 		});
