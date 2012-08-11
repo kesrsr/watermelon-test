@@ -9,11 +9,14 @@ import sec.fcl.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -26,6 +29,20 @@ public class RecordSampleActivity extends Activity {
 
 		Button send_email = (Button) findViewById(R.id.email);
 		Button save_local = (Button) findViewById(R.id.save);
+
+		ImageView image = (ImageView) findViewById(R.id.image);
+
+		String result = getIntent().getExtras().getString("classify_result");
+		Log.e("WM", result);
+
+		int in = Integer.parseInt(result);
+		
+		image.setBackgroundColor(Color.WHITE);
+		if (in == 0)
+			image.setBackgroundResource(R.drawable.thumb_down);
+		
+		else if (in == 1)
+			image.setBackgroundResource(R.drawable.thumb_up);
 
 		final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.type);
 

@@ -14,13 +14,16 @@ public class AudioClassify {
 		this.file = file;
 		features_vector = new Vector<float[]>();
 	}
-	
-	public void run(){
-		if(file == null)
-			return;
-		
+
+	public int run() {
+		if (file == null)
+			return -1;
+
 		Preprocessing pre_wm = new Preprocessing(file);
 		pre_wm.run();
+
+		if (pre_wm.getFilterFrames() == null)
+			return -1;
 
 		ShortTimeEnergy ste = new ShortTimeEnergy(pre_wm.getFilterFrames());
 		ste.calculate();
@@ -31,8 +34,16 @@ public class AudioClassify {
 		for (int j = 0; j < features.length; j++) {
 			features_vector.add(features[j]);
 		}
-		
+
+		if (features_vector.size() == 0)
+			return -1;
+
 		Classify classify = new Classify(features_vector, 1);
-		classify.run();
+		float result = classify.run();
+
+		if (result >= 0.5f)
+			return 1;
+		else
+			return 0;
 	}
 }

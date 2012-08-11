@@ -12,7 +12,7 @@ import libsvm.svm_node;
 public class Classify {
 //	public final static String DATABASE_PATH = "/data/data/sec.fcl/databases/";
 
-	public final static String DATABASE_PATH = "/mnt/sdcard/";
+	public final static String DATABASE_PATH = "/sdcard/WMTest/";
 	private String model_file_name = "model";
 	private Vector<float[]> input;
 	private int label;
@@ -24,7 +24,7 @@ public class Classify {
 		correct = 0;
 	}
 
-	public void run() {
+	public float run() {
 		try {
 			svm_model model = svm.svm_load_model(DATABASE_PATH+model_file_name);
 
@@ -48,9 +48,15 @@ public class Classify {
 					Log.e("WM Classify Result", "\nTest result is " + output
 							+ " ----> Not a WaterMelon");
 			}
+			
+			float ripe_vote = correct / input.size();
 			System.out.println(correct + " Correct in "+input.size());
+			
+			return ripe_vote;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return 0;
 	}
 }
