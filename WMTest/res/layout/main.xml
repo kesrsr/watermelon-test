@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="center|fill"
+    android:gravity="center"
     android:orientation="vertical" >
 
     <Button
         android:id="@+id/start"
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
         android:text="@string/ss"
-        android:textSize="30dp" >
-    </Button>
+        android:textSize="30dp" />
+
+<!--     <com.androidplot.xy.XYPlot
+        android:id="@+id/audio_plot"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:layout_weight="3"
+        title="A Simple XYPlot Example" /> -->
 
     <Button
         android:id="@+id/stop"
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center|bottom"
-        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
         android:text="@string/stop"
-        android:textSize="30dp" >
-    </Button>
+        android:textSize="30dp" />
 
-</FrameLayout>
+</LinearLayout>
