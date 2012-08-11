@@ -3,15 +3,17 @@ package sec.fcl.svm;
 import java.io.IOException;
 import java.util.Vector;
 
-import sec.fcl.Constant;
-
+import android.util.Log;
 
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
 
 public class Classify {
-	private String model_file_name = "wm/model";
+//	public final static String DATABASE_PATH = "/data/data/sec.fcl/databases/";
+
+	public final static String DATABASE_PATH = "/mnt/sdcard/";
+	private String model_file_name = "model";
 	private Vector<float[]> input;
 	private int label;
 	private int correct;
@@ -24,7 +26,7 @@ public class Classify {
 
 	public void run() {
 		try {
-			svm_model model = svm.svm_load_model(model_file_name);
+			svm_model model = svm.svm_load_model(DATABASE_PATH+model_file_name);
 
 			for (int i = 0; i < input.size(); i++) {
 				svm_node[] in = new svm_node[input.get(i).length];
@@ -34,18 +36,16 @@ public class Classify {
 					in[j].value = input.get(i)[j];
 				}
 
-				// Constant.print(in);
-
 				double output = svm.svm_predict(model, in);
 
 				if(output == label)
 					correct++;
 				
 				if (output == 1)
-					System.out.println("\nTest result is " + output
+					Log.e("WM Classify Result", "\nTest result is " + output
 							+ " ----> WaterMelon");
 				else
-					System.out.println("\nTest result is " + output
+					Log.e("WM Classify Result", "\nTest result is " + output
 							+ " ----> Not a WaterMelon");
 			}
 			System.out.println(correct + " Correct in "+input.size());

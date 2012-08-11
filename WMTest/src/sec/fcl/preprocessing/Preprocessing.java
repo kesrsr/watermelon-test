@@ -5,10 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import sec.fcl.audio.io.WaveDecoder;
 import sec.fcl.filter.Butterworth;
 import sec.fcl.filter.Filter;
-
-import com.badlogic.audio.io.WaveDecoder;
 
 public class Preprocessing {
 	int windowSize = 40;

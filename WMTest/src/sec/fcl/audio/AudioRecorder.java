@@ -35,7 +35,7 @@ public class AudioRecorder {
 		Log.e("AudioRecorder", "buffer " + bufferSize);// buffer 8192
 	}
 
-	public void startRecord() {
+	public void startRecord(final Float[] sample) {
 		if (bufferSize == 0)
 			bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
 					RECORD_CHANNEL, AUDIO_ENCODING);
@@ -49,7 +49,7 @@ public class AudioRecorder {
 		recordThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				writeToFile();
+				writeToFile(sample);
 			}
 		}, "AudioRecorder");
 
@@ -71,7 +71,7 @@ public class AudioRecorder {
 		return (file_folder.getAbsolutePath() + "/" + filename + exten);
 	}
 
-	private void writeToFile() {
+	private void writeToFile(Float[] sample) {
 		byte data[] = new byte[bufferSize];
 		String filename = getFilename(TEMP_FILE, AUDIO_FILE_FORMAT);
 		FileOutputStream os = null;
@@ -84,9 +84,23 @@ public class AudioRecorder {
 
 		int read = 0;
 
+		Float[] temp = new Float[sample.length];
+		byte[] bytes = new byte[4];
+		
+		int length = bufferSize / 4;//how many float values in one buffer
+
 		if (os != null) {
 			while (isRecording) {
 				read = recorder.read(data, 0, bufferSize);
+
+				for(int i = 0; i < length; i++){
+					System.arraycopy(sample, 1, temp, 0, sample.length - 1);
+					System.arraycopy(data, i * 4, bytes, 0, bytes.length);
+				
+					temp[sample.length - 1] = convert(bytes);
+					System.arraycopy(temp, 0, sample, 0, sample.length);
+				}
+
 
 				if (AudioRecord.ERROR_INVALID_OPERATION != read) {
 					try {
@@ -108,7 +122,7 @@ public class AudioRecorder {
 
 	}
 
-	public void stopRecord() {
+	public String stopRecord() {
 		if (recorder != null) {
 			isRecording = false;
 
@@ -118,21 +132,21 @@ public class AudioRecorder {
 			recorder = null;
 			recordThread = null;
 		}
-		saveToLocal();
-
+		return saveToLocal();
 	}
-	
-	private void saveToLocal(){
+
+	private String saveToLocal() {
 		fileName = getFilename(getTime(), AUDIO_FILE_FORMAT);
-		copyWaveFile(getFilename(TEMP_FILE, AUDIO_FILE_FORMAT),
-				fileName);
-		deleteTempFile();				
+		copyWaveFile(getFilename(TEMP_FILE, AUDIO_FILE_FORMAT), fileName);
+		deleteTempFile();
+		
+		return fileName;
 	}
 
-	public String getRcordFileName(){
-		return fileName;		
+	public String getRcordFileName() {
+		return fileName;
 	}
-	
+
 	private String getTime() {
 		Calendar cal = Calendar.getInstance();
 		String time = cal.get(Calendar.YEAR) + "_"
@@ -158,7 +172,6 @@ public class AudioRecorder {
 		long longSampleRate = SAMPLE_RATE;
 		int channels = 2;
 		long byteRate = RECORD_BPP * SAMPLE_RATE * channels / 8;
-
 
 		byte[] data = new byte[bufferSize];
 
@@ -236,5 +249,13 @@ public class AudioRecorder {
 		header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
 
 		out.write(header, 0, 44);
+	}
+
+	private float convert(byte[] bytes) {
+		int asInt = (bytes[0] & 0xFF) | ((bytes[1] & 0xFF) << 8)
+				| ((bytes[2] & 0xFF) << 16) | ((bytes[3] & 0xFF) << 24);
+
+		float asFloat = Float.intBitsToFloat(asInt);
+		return asFloat;
 	}
 }

@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
-import com.badlogic.audio.analysis.FFT;
+//import com.badlogic.audio.analysis.FFT;
 
 public class FastFourierTransform {
 	Vector<float[]> time_domain;
@@ -36,9 +36,9 @@ public class FastFourierTransform {
 			// padding 0 at the end
 			for (int j = time_domain.get(i).length; j < pow_two; j++)
 				time_specturm[j] = 0;
-			FFT fft = new FFT(time_specturm.length, sample_rate);
+//			FFT fft = new FFT(time_specturm.length, sample_rate);
 
-			fft.forward(time_specturm);
+//			fft.forward(time_specturm);
 
 			// plot.plot(fft.getSpectrum(), 1, Color.RED);
 		}
@@ -58,12 +58,12 @@ public class FastFourierTransform {
 			for (int j = time_domain.get(i).length; j < pow_two; j++)
 				time_specturm[j] = 0;
 
-			FFT fft = new FFT(time_specturm.length, sample_rate);
-			fft.forward(time_specturm);
+//			FFT fft = new FFT(time_specturm.length, sample_rate);
+//			fft.forward(time_specturm);
 
-			float[] spectrum = new float[max - min];
-			System.arraycopy(fft.getSpectrum(), min, spectrum, 0, max - min);
-			frequency_specturm.add(spectrum);
+//			float[] spectrum = new float[max - min];
+//			System.arraycopy(fft.getSpectrum(), min, spectrum, 0, max - min);
+//			frequency_specturm.add(spectrum);
 		}
 
 		Vector<float[]> frequency_specturm_average = new Vector<float[]>();
