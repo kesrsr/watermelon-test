@@ -1,31 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/start"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:text="@string/ss"
-        android:textSize="30dp" />
-
-<!--     <com.androidplot.xy.XYPlot
+    <!--
+         <com.androidplot.xy.XYPlot
         android:id="@+id/audio_plot"
         android:layout_width="fill_parent"
         android:layout_height="200dp"
         android:layout_weight="3"
-        title="A Simple XYPlot Example" /> -->
+        title="A Simple XYPlot Example" />
+    -->
 
-    <Button
-        android:id="@+id/stop"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:id="@+id/plot_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
         android:layout_weight="2"
-        android:text="@string/stop"
-        android:textSize="30dp" />
+        android:orientation="vertical" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="2"
+        android:gravity="bottom" >
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/ss"
+            android:textSize="50dp" />
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/stop"
+            android:textSize="50dp" />
+    </LinearLayout>
 
 </LinearLayout>
