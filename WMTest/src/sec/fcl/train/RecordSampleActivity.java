@@ -36,11 +36,11 @@ public class RecordSampleActivity extends Activity {
 		Log.e("WM", result);
 
 		int in = Integer.parseInt(result);
-		
+
 		image.setBackgroundColor(Color.WHITE);
 		if (in == 0)
 			image.setBackgroundResource(R.drawable.thumb_down);
-		
+
 		else if (in == 1)
 			image.setBackgroundResource(R.drawable.thumb_up);
 
@@ -59,8 +59,8 @@ public class RecordSampleActivity extends Activity {
 		exit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				addTypeToFileName(radioGroup);
-//				relaunch();
+				// addTypeToFileName(radioGroup);
+				relaunch();
 				Intent intent = new Intent(Intent.ACTION_MAIN);
 				intent.addCategory(Intent.CATEGORY_HOME);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -71,12 +71,12 @@ public class RecordSampleActivity extends Activity {
 	}
 
 	// relaunch the default activity
-	// private void relaunch() {
-	// Intent i = getBaseContext().getPackageManager()
-	// .getLaunchIntentForPackage(getBaseContext().getPackageName());
-	// i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	// startActivity(i);
-	// }
+	private void relaunch() {
+		Intent i = getBaseContext().getPackageManager()
+				.getLaunchIntentForPackage(getBaseContext().getPackageName());
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+	}
 
 	public ArrayList<String> addTypeToFileName(RadioGroup radioGroup) {
 		// get file names passed in
