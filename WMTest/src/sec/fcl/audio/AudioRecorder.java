@@ -1,19 +1,44 @@
 package sec.fcl.audio;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
 
+import sec.fcl.R;
+import sec.fcl.audio.io.EndianDataInputStream;
+import sec.fcl.view.DrawView;
+
+import android.app.Activity;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
 
+@SuppressWarnings("unused")
 public class AudioRecorder {
+	class MyObservable extends Observable {
+		@Override
+		public void notifyObservers() {
+			setChanged();
+			super.notifyObservers();
+		}
+	}
+
+	private MyObservable notifier;
+	{
+		notifier = new MyObservable();
+	}
+
 	private final String AUDIO_FILE_FORMAT = ".wav";
 	private final String FILE_FOLDER = "WMTest";
 	private final String TEMP_FILE = "record_temp";
@@ -29,13 +54,32 @@ public class AudioRecorder {
 	AudioRecord recorder = null;
 	private String fileName = null;
 
+	/** inverse max short value as float **/
+	private final float MAX_VALUE = 1.0f / Short.MAX_VALUE;
+	Vector<Float> means;
+
+	DrawView dv = null;
+	int divide = 20;
+
 	public AudioRecorder() {
 		bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, RECORD_CHANNEL,
 				AUDIO_ENCODING);
+
+		means = new Vector<Float>();
 		Log.e("AudioRecorder", "buffer " + bufferSize);// buffer 8192
 	}
 
-	public void startRecord(final Float[] sample) {
+	public AudioRecorder(DrawView dv) {
+		bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, RECORD_CHANNEL,
+				AUDIO_ENCODING);
+
+		means = new Vector<Float>();
+		this.dv = dv;
+
+		Log.e("AudioRecorder", "buffer " + bufferSize);// buffer 8192
+	}
+
+	public void startRecord(final Vector<Float> samples) {
 		if (bufferSize == 0)
 			bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
 					RECORD_CHANNEL, AUDIO_ENCODING);
@@ -47,9 +91,12 @@ public class AudioRecorder {
 		recorder.startRecording();
 
 		recordThread = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
-				writeToFile(sample);
+				String filename = getFilename(TEMP_FILE, AUDIO_FILE_FORMAT);
+
+				writeToFile(filename, samples);
 			}
 		}, "AudioRecorder");
 
@@ -71,9 +118,8 @@ public class AudioRecorder {
 		return (file_folder.getAbsolutePath() + "/" + filename + exten);
 	}
 
-	private void writeToFile(Float[] sample) {
+	private void writeToFile(String filename, Vector<Float> values) {
 		byte data[] = new byte[bufferSize];
-		String filename = getFilename(TEMP_FILE, AUDIO_FILE_FORMAT);
 		FileOutputStream os = null;
 
 		try {
@@ -83,25 +129,29 @@ public class AudioRecorder {
 		}
 
 		int read = 0;
-
-		Float[] temp = new Float[sample.length];
-		byte[] bytes = new byte[4];
-		
-		int length = bufferSize / 4;//how many float values in one buffer
+		int mean_add = 0;
 
 		if (os != null) {
 			while (isRecording) {
 				read = recorder.read(data, 0, bufferSize);
 
-				for(int i = 0; i < length; i++){
-					System.arraycopy(sample, 1, temp, 0, sample.length - 1);
-					System.arraycopy(data, i * 4, bytes, 0, bytes.length);
-				
-					temp[sample.length - 1] = convert(bytes);
-					System.arraycopy(temp, 0, sample, 0, sample.length);
+				Vector<Float> samples = read_samples(data);
+				means.add(root_mean_sqr(samples));
+
+				for (int i = 0; i < samples.size() / divide; i++){
+					List<Float> sub = samples.subList(i * divide, (i+1)*divide - 1);
+					if (values != null && mean_add < values.size()) {
+						values.set(mean_add, mean(sub));
+						mean_add++;
+
+						notifier.notifyObservers();
+					} else if (values != null) {
+						values.remove(0);
+						values.add(mean(sub));
+
+						notifier.notifyObservers();
+					}
 				}
-
-
 				if (AudioRecord.ERROR_INVALID_OPERATION != read) {
 					try {
 						os.write(data);
@@ -122,7 +172,7 @@ public class AudioRecorder {
 
 	}
 
-	public String stopRecord() {
+	public void stopRecord() {
 		if (recorder != null) {
 			isRecording = false;
 
@@ -132,15 +182,24 @@ public class AudioRecorder {
 			recorder = null;
 			recordThread = null;
 		}
-		return saveToLocal();
 	}
 
-	private String saveToLocal() {
+	public String saveToLocal() {
 		fileName = getFilename(getTime(), AUDIO_FILE_FORMAT);
 		copyWaveFile(getFilename(TEMP_FILE, AUDIO_FILE_FORMAT), fileName);
 		deleteTempFile();
-		
+
 		return fileName;
+	}
+
+	public float getMean() {
+		float sum = 0;
+		for (int i = 0; i < means.size(); i++)
+			sum += means.get(i);
+
+		Log.e("WM", "mean " + sum / means.size());
+
+		return sum / means.size();
 	}
 
 	public String getRcordFileName() {
@@ -251,11 +310,72 @@ public class AudioRecorder {
 		out.write(header, 0, 44);
 	}
 
-	private float convert(byte[] bytes) {
-		int asInt = (bytes[0] & 0xFF) | ((bytes[1] & 0xFF) << 8)
-				| ((bytes[2] & 0xFF) << 16) | ((bytes[3] & 0xFF) << 24);
+	private Vector<Float> read_samples(byte[] data) {
+		int readSamples = 0;
+		EndianDataInputStream in = new EndianDataInputStream(
+				new ByteArrayInputStream(data));
+		Vector<Float> samples = new Vector<Float>();
 
-		float asFloat = Float.intBitsToFloat(asInt);
-		return asFloat;
+		for (int i = 0; i < data.length / RECORD_CHANNEL; i++) {
+			float sample = 0;
+			try {
+				for (int j = 0; j < RECORD_CHANNEL; j++) {
+					int shortValue = in.readShortLittleEndian();
+					sample += (shortValue * MAX_VALUE);
+				}
+				sample /= RECORD_CHANNEL;
+				samples.add(sample);
+				readSamples++;
+			} catch (Exception ex) {
+				break;
+			}
+		}
+
+		// Log.e("WM", "Mean "+mean(samples));
+		return samples;
+	}
+	
+	private float mean(float[] input) {
+		float sum = 0;
+		for (int i = 0; i < input.length; i++)
+			sum += input[i];
+
+		return sum / input.length;
+	}
+	
+	private float mean(List<Float> input) {
+		float sum = 0;
+		for (int i = 0; i < input.size(); i++)
+			sum += input.get(i);
+
+		return sum / input.size();
+	}
+	
+	private float mean(Vector<Float> input) {
+		float sum = 0;
+		for (int i = 0; i < input.size(); i++)
+			sum += input.get(i);
+
+		return sum / input.size();
+	}
+	
+	private float mean_sq(Vector<Float> input) {
+		float sum = 0;
+		for (int i = 0; i < input.size(); i++)
+			sum += input.get(i) * input.get(i);
+
+		return sum / input.size();
+	}
+
+	private float root_mean_sqr(Vector<Float> input) {
+		return (float) Math.sqrt(mean_sq(input));
+	}
+
+	public void addObserver(Observer observer) {
+		notifier.addObserver(observer);
+	}
+
+	public void removeObserver(Observer observer) {
+		notifier.deleteObserver(observer);
 	}
 }

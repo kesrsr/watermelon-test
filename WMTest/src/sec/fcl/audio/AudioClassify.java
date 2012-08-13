@@ -9,9 +9,11 @@ import sec.fcl.svm.Classify;
 public class AudioClassify {
 	Vector<float[]> features_vector;
 	String file = null;
+	float noise;
 
-	public AudioClassify(String file) {
+	public AudioClassify(String file, float noise) {
 		this.file = file;
+		this.noise = noise;
 		features_vector = new Vector<float[]>();
 	}
 
@@ -19,7 +21,7 @@ public class AudioClassify {
 		if (file == null)
 			return -1;
 
-		Preprocessing pre_wm = new Preprocessing(file);
+		Preprocessing pre_wm = new Preprocessing(file, noise);
 		pre_wm.run();
 
 		if (pre_wm.getFilterFrames() == null)

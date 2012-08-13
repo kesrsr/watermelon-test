@@ -28,7 +28,7 @@ public class RecordSampleActivity extends Activity {
 		setContentView(R.layout.sample2);
 
 		Button send_email = (Button) findViewById(R.id.email);
-		Button save_local = (Button) findViewById(R.id.save);
+		Button exit = (Button) findViewById(R.id.exit);
 
 		ImageView image = (ImageView) findViewById(R.id.image);
 
@@ -56,23 +56,27 @@ public class RecordSampleActivity extends Activity {
 			}
 		});
 
-		save_local.setOnClickListener(new OnClickListener() {
+		exit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				addTypeToFileName(radioGroup);
-				relaunch();
+//				addTypeToFileName(radioGroup);
+//				relaunch();
+				Intent intent = new Intent(Intent.ACTION_MAIN);
+				intent.addCategory(Intent.CATEGORY_HOME);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		});
 
 	}
 
 	// relaunch the default activity
-	private void relaunch() {
-		Intent i = getBaseContext().getPackageManager()
-				.getLaunchIntentForPackage(getBaseContext().getPackageName());
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(i);
-	}
+	// private void relaunch() {
+	// Intent i = getBaseContext().getPackageManager()
+	// .getLaunchIntentForPackage(getBaseContext().getPackageName());
+	// i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	// startActivity(i);
+	// }
 
 	public ArrayList<String> addTypeToFileName(RadioGroup radioGroup) {
 		// get file names passed in

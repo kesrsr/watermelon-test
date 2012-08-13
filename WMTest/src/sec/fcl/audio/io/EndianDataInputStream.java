@@ -17,7 +17,7 @@ public class EndianDataInputStream extends DataInputStream
 		return new String( bytes, "US-ASCII" );
 	}
 	
-	public short readShortLittleEndian( ) throws Exception
+	public short readShortLittleEndian() throws Exception
 	{
 		int result = readUnsignedByte();
 		result |= readUnsignedByte() << 8;		

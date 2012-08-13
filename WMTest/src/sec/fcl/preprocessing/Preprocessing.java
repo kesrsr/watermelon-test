@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import android.util.Log;
+
 import sec.fcl.audio.io.WaveDecoder;
 import sec.fcl.filter.Butterworth;
 import sec.fcl.filter.Filter;
@@ -18,19 +20,23 @@ public class Preprocessing {
 	ArrayList<Integer> period;
 	String input_file;
 	private int min_frame_length = 1500;
-	
+
 	Butterworth bw;
 	Filter filter;
 
-	public Preprocessing(String input) {
+	public Preprocessing(String input, float noise) {
 		this.input_file = input;
-		
+		thre = noise * 10;
+		// thre = 0.025f;
+		Log.e("WM", thre + " thre");
+
 		bw = new Butterworth(2, 0.05f, true);
 		filter = new Filter(bw.computeB(), bw.computeA());
 	}
 
 	public static void main(String[] args) {
-		(new Preprocessing("wm/Close/GOOD_2012_6_12_22_25_57.wav")).run();
+		(new Preprocessing("wm/Close/GOOD_2012_6_12_22_25_57.wav", 0.0125f))
+				.run();
 	}
 
 	public void run() {
@@ -63,8 +69,8 @@ public class Preprocessing {
 		extract_frames(samples);
 		remove_fake_frames();
 
-//		Plot plot = new Plot("Test", 512, 512);
-//		plot.plot(getFrames().get(0), 100, Color.red);
+		// Plot plot = new Plot("Test", 512, 512);
+		// plot.plot(getFrames().get(0), 100, Color.red);
 	}
 
 	// return the minimum length of multiple of window size
@@ -154,7 +160,7 @@ public class Preprocessing {
 
 		return frames;
 	}
-	
+
 	public Vector<float[]> getFilterFrames() {
 		Vector<float[]> frames = new Vector<float[]>();
 
@@ -163,7 +169,7 @@ public class Preprocessing {
 		for (int i = 0; i < period.size() / 2; i++) {
 			float[] frame = getFrames(origin_samples, period.get(i * 2),
 					period.get(i * 2 + 1));
-			
+
 			frames.add(filter.filter(frame));
 		}
 
