@@ -1,0 +1,1 @@
+Test whether a watermelon is good or not using the microphone and acceleration sensors on Android mobile phones
